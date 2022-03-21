@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      #main {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+      }
+
+      #main img {
+        width: 90%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <h3 id="wallet">
+        <!--SHOW CURRENT WALLET VALUE HERE, ONLY THE NUMBER SHOULD BE VISIBLE-->
+      </h3>
+    </div>
+
+    <div id="main">
+      <!--SHOW ALL THE VOUCEHRS DATA FROM API HERE( IMAGE, NAME AND PRICE)-->
+    </div>
+  </body>
+</html>
+
+<script type="module">
+  //WRITE YOUR LOGIC HERE
+  let paisa = JSON.parse(localStorage.getItem("wallet"));
+  // console.log(paisa);
+  let url = `https://masai-vouchers-api.herokuapp.com/api/vouchers`;
+
+  getData();
+
+  async function getData() {
+    let res = await fetch(url);
+
+    let data = await res.json();
+    let arr = data[0].vouchers;
+    console.log(data[0].vouchers);
+    appendVouchers(arr);
+  }
+
+  let area = document.querySelector("#main");
+
+  let money = (document.querySelector("#wallet").textContent = paisa || 0);
+  console.log(money);
+
+  function appendVouchers(data) {
+    area.innerHTML = null;
+    data.map(function (el) {
+      let div = document.createElement("div");
+
+      let img = document.createElement("img");
+      img.src = el.image;
+
+      let title = document.createElement("p");
+      title.textContent = el.name;
+      let price = document.createElement("p");
+      price.textContent = el.price;
+
+      let btn = document.createElement("button");
+      btn.textContent = "Buy";
+      btn.setAttribute("id", "buy");
+      btn.addEventListener("click", function () {
+        buyme(el);
+      });
+
+      div.append(img, title, price, btn);
+
+      area.append(div);
+    });
+  }
+  let purchase = JSON.parse(localStorage.getItem("purchases")) || [];
+  console.log(purchase, "This is index purchase");
+
+  function buyme(el) {
+    let budget = Number(el.price);
+    if (paisa > budget) {
+      paisa -= budget;
+
+      purchase.push(el);
+      document.querySelector("#wallet").textContent = paisa || 0;
+      localStorage.setItem("wallet", JSON.stringify(paisa));
+      localStorage.setItem("purchases", JSON.stringify(purchase));
+    } else {
+      alert("Insufficient Wallet Balance");
+    }
+  }
+
+  // localStorage.clear();
+</script>
