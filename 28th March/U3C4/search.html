@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/main.css" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="main">
+      <!--No need to add sidebar here, directly display search results here only-->
+
+      <!-- show headline, description and image -->
+    </div>
+  </body>
+
+  <script type="module">
+    import { apiCall, appendArticles } from "../scripts/main.js";
+    let word = JSON.parse(localStorage.getItem("search_term"));
+    let url = `https://blog-search-u3c4.herokuapp.com/api/search/?q=${word}`;
+    let searchData = await apiCall(url);
+    let main = document.querySelector("#main");
+    appendArticles(searchData, main);
+    console.log(searchData);
+  </script>
+</html>
